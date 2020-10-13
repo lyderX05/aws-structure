@@ -1,0 +1,80 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description": "Ec2 Instance createion using the cloud formation",
+    "Metadata": {
+      "Database": {"Description": "A DynamoDB example"}
+    },
+    "Parameters": {
+        "DynamoTableName": {
+            "Type": "String",
+            "Description": "A Dynamo DB Name",
+            "Default": "dynamo_table",
+            "AllowedPattern": "[a-zA-Z0-9_.-]+"
+        },
+        "DynamoIndexName": {
+            "Type": "String",
+            "Default": "dynamotable_index",
+            "Description": "A Dynamo DB table index"
+        }
+    },
+    "Resources": {
+        "DynamoDBInstance": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "TableName": {"Ref": "DynamoTableName"},
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "Id",
+                        "AttributeType": "S"
+                    }, {
+                        "AttributeName": "Age",
+                        "AttributeType": "N"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "Id",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "Age",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits" : "5",
+                    "WriteCapacityUnits" : "5"
+                },
+                "LocalSecondaryIndexes": [
+                    {
+                        "IndexName": {"Ref": "DynamoIndexName"},
+                        "KeySchema": [
+                            {
+                                "AttributeName": "Id",
+                                "KeyType": "HASH"
+                            },
+                            {
+                                "AttributeName": "Age",
+                                "KeyType": "RANGE"
+                            }
+                        ],
+                        "Projection": {
+                            "NonKeyAttributes": ["Name"],
+                            "ProjectionType": "INCLUDE"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "type",
+                        "Value": "dynamo"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "dynamo_cloud"
+                    }
+                ]
+            }
+        }
+    }
+}
