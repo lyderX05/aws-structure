@@ -11,8 +11,8 @@ This is important to note that each resources is tested and you can make your ow
 ## Upcoming Changes
 
 There are multiple Changes which are under development:
-- Templates for almost each of resorces avaiable in GCP 
-- Complex Structure of Cloud Structure
+- Templates for almost each of resorces available in AWS 
+- Complex Cloud Structure
 - Microservice based architecture and Deployment
 - DMZ structure format on Cloud and Security based structure.
 
