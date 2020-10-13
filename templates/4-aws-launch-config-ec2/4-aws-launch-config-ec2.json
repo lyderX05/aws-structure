@@ -1,0 +1,65 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Parameters": {
+        "LaunchConfigName": {
+            "Type": "String",
+            "Description": "A Launch Configuration Name",
+            "Default": "Auto-Scale-Launch-Config"
+        },
+        "AmazonAMI": {
+            "Type": "AWS::EC2::Image::Id",
+            "Description": "A AWS AMI ID",
+            "Default": "ami-01d0a26bb43892d21"
+        },
+        "EC2InstanceType": {
+            "Type": "String",
+            "AllowedValues": [
+                "t1.micro", 
+                "t2.nano", 
+                "t2.micro", 
+                "t2.small", 
+                "t2.medium", 
+                "t2.large" 
+            ],
+            "Description": "A EC2 Instance Type",
+            "Default": "t2.micro"
+        },
+        "IAMInstanceProfile": {
+            "Type": "String",
+            "Description": "A IAM Instance Profile",
+            "Default": "EC2-Test"
+        },
+        "KeyName": {
+            "Type": "String",
+            "Default": "Cloudform_key"
+        }
+        
+    },
+    "Resources": {
+        "SSHSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+              "GroupDescription": "SSH Access Security Group",
+              "SecurityGroupIngress" : {
+                "IpProtocol": "tcp",
+                "FromPort": 22,
+                "ToPort": 22,
+                "CidrIp": "0.0.0.0/0"
+              }
+            }
+        }, 
+        "LaunchConfiguratioon": {  
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "InstanceType": {"Ref": "EC2InstanceType"},
+                "LaunchConfigurationName": {"Ref": "LaunchConfigName"},
+                "ImageId": {"Ref": "AmazonAMI"},
+                "KeyName": {"Ref": "KeyName"},
+                "IamInstanceProfile": {"Ref": "IAMInstanceProfile"},
+                "SecurityGroups": [{"Ref": "SSHSecurityGroup"}]
+                
+            }
+
+        }
+    }
+}
