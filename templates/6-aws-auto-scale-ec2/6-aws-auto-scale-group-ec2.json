@@ -1,0 +1,74 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Parameters": {
+        "LaunchConfigName": {
+            "Type": "String",
+            "Description": "A Launch Configuration Name",
+            "Default": "Auto-Scale-Launch-Config"
+        },
+        "AutoScaleGroupName" : {
+            "Type": "String",
+            "Description": "A Launch Configuration Name",
+            "Default": "Auto-Scale-Config3"
+        }
+        
+    },
+    "Resources": {
+        "AWSAutoScaleTemplate": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                
+                "LaunchConfigurationName": {"Ref": "LaunchConfigName"},
+                "AvailabilityZones": { "Fn::GetAZs": "us-east-2" },
+                "MinSize": "1",
+                "MaxSize": "4",
+                "NotificationConfigurations": [
+                    {
+                        "NotificationTypes": ["autoscaling:EC2_INSTANCE_LAUNCH"],
+                        "TopicARN": "arn:aws:sns:us-east-2:866067946229:snsconfig-AlarmCreationTopic-1FCCXANMNVIV4"
+                    },
+                    {
+                        "NotificationTypes": ["autoscaling:EC2_INSTANCE_TERMINATE"],
+                        "TopicARN": "arn:aws:sns:us-east-2:866067946229:snsconfig-AlarmTerminateTopic-1AU9Q0WVEUE2V"
+                    }
+                ],
+                "MetricsCollection": [
+                    {
+                        "Granularity": "1Minute",
+                        "Metrics": [
+                            "GroupInServiceInstances", "GroupInServiceCapacity", "GroupTotalCapacity", "GroupTerminatingCapacity"
+                        ]
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "deployment-type",
+                        "PropagateAtLaunch": true,
+                        "Value": "Cloudformation"
+                    },
+                    {
+                        "Key": "method",
+                        "PropagateAtLaunch": true,
+                        "Value": "aws-cli"
+                    },
+                    {
+                        "Key": "ResourceName",
+                        "PropagateAtLaunch": false,
+                        "Value": {"Ref": "AutoScaleGroupName"}
+                    }
+                ]   
+                
+            }
+        },
+        "AWSAutoScalePolicy": {
+            "Type": "AWS::AutoScaling::ScalingPolicy",
+            "Properties": {
+                "AutoScalingGroupName": {"Ref": "AWSAutoScaleTemplate"},
+                "AdjustmentType": "PercentChangeInCapacity",
+                "ScalingAdjustment": 25,
+                "MinAdjustmentMagnitude": 1
+            },
+            "DependsOn": ["AWSAutoScaleTemplate"]
+        }
+    }
+}

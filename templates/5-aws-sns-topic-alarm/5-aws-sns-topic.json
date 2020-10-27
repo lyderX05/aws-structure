@@ -1,0 +1,46 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Parameters": {
+      "AlarmCreationEmail": {
+        "Default": "shubhamheda12345@outlook.com",
+        "Description": "Email Address to notify the creation of EC2 Instance",
+        "Type": "String"
+      },
+      "AlarmTerminateEmail": {
+        "Default": "shubhamheda12345@outlook.com",
+        "Description": "Email Address to notify the termination of EC2 Instance",
+        "Type": "String"
+      }
+        
+    },
+    "Resources" : {
+        "AlarmCreationTopic": {
+          "Type": "AWS::SNS::Topic",
+          "Properties": {
+            "Subscription": [{
+              "Endpoint": { "Ref": "AlarmCreationEmail" },
+              "Protocol": "email"
+            }]
+          }
+        },
+        "AlarmTerminateTopic": {
+          "Type": "AWS::SNS::Topic",
+          "Properties": {
+            "Subscription": [{
+              "Endpoint": { "Ref": "AlarmTerminateEmail" },
+              "Protocol": "email"
+            }]
+          }
+        }
+    },
+    "Outputs": {
+      "SNSCreationARN": {
+        "Description": "Output of Creation Alarm",
+        "Value": {"Ref": "AlarmCreationTopic"}
+      },
+      "SNSTerminateARN": {
+        "Description": "Output of Creation Alarm",
+        "Value": {"Ref": "AlarmTerminateTopic"}
+      }
+    }
+}
